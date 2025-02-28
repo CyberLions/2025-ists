@@ -1,0 +1,11 @@
+goon1
+goon2
+hacker
+buyer
+lockpick
+safecracker
+getaway
+driver
+watchdog
+manager
+mastermind
