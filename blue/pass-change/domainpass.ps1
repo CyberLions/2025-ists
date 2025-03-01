@@ -1,3 +1,4 @@
+# This script is for domain accounts, NOT local accounts
 # Import the Active Directory module
 Import-Module ActiveDirectory
 
@@ -13,16 +14,11 @@ $USER_PASSWORD = Read-Host -AsSecureString -Prompt "Enter USER password"
 
 # Define domain users and their passwords
 $Users = @{
-    "representative" = $ADMIN_PASSWORD
-    "senator" = $ADMIN_PASSWORD
-    "attache" = $ADMIN_PASSWORD
-    "ambassador" = $ADMIN_PASSWORD
-    "foreignaffairs" = $USER_PASSWORD
-    "intelofficer" = $USER_PASSWORD
-    "delegate" = $USER_PASSWORD
-    "advisor" = $USER_PASSWORD
-    "lobbyist" = $USER_PASSWORD
-    "aidworker" = $USER_PASSWORD
+    "watchdog" = $ADMIN_PASSWORD
+    "manager" = $ADMIN_PASSWORD
+    "mastermind" = $ADMIN_PASSWORD
+    "getaway" = $USER_PASSWORD
+    "driver" = $USER_PASSWORD
 }
 
 # Change passwords for specified domain users
@@ -40,8 +36,9 @@ foreach ($User in $Users.Keys) {
 }
 
 # Disable login for all other domain users
+# note that whiteteam user must not be disabled
 Get-ADUser -Filter * | Where-Object {
-    $_.Enabled -eq $true -and $_.SamAccountName -notin $Users.Keys
+    $_.Enabled -eq $true -and $_.SamAccountName -notin $Users.Keys -and $_.SamAccountName -ne "whiteteam"
 } | ForEach-Object {
     try {
         Disable-ADAccount -Identity $_.SamAccountName

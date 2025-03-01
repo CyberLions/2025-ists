@@ -1,3 +1,4 @@
+# This script is for local accounts, NOT domain accounts
 # Check if the script is run as Administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Error "This script must be run as Administrator. Exiting."
@@ -10,17 +11,14 @@ $USER_PASSWORD = Read-Host -AsSecureString -Prompt "Enter USER password"
 
 # Define users and their passwords
 $Users = @{
-    "president" = $ADMIN_PASSWORD
-    "vicepresident" = $ADMIN_PASSWORD
-    "defenseminister" = $ADMIN_PASSWORD
-    "secretary" = $ADMIN_PASSWORD
-    "general" = $USER_PASSWORD
-    "admiral" = $USER_PASSWORD
-    "judge" = $USER_PASSWORD
-    "bodyguard" = $USER_PASSWORD
-    "cabinetofficial" = $USER_PASSWORD
-    "treasurer" = $USER_PASSWORD
+    "buyer" = $ADMIN_PASSWORD
+    "lockpick" = $ADMIN_PASSWORD
+    "safecracker" = $ADMIN_PASSWORD
+    "goon1" = $USER_PASSWORD
+    "goon2" = $USER_PASSWORD
+    "hacker" = $USER_PASSWORD
 }
+
 
 # Change passwords for specified users
 foreach ($User in $Users.Keys) {
@@ -37,8 +35,9 @@ foreach ($User in $Users.Keys) {
 }
 
 # Disable login for all other users
+# note that whiteteam user must not be disabled
 Get-LocalUser | Where-Object {
-    $_.Enabled -eq $true -and $_.Name -notin $Users.Keys
+    $_.Enabled -eq $true -and $_.Name -notin $Users.Keys -and $_.Name -ne "whiteteam"
 } | ForEach-Object {
     try {
         Disable-LocalUser -Name $_.Name

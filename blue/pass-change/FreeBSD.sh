@@ -14,16 +14,12 @@ echo
 
 declare -A USERS
 USERS=(
-    [president]="$ADMIN_PASSWORD"
-    [vicepresident]="$ADMIN_PASSWORD"
-    [defenseminister]="$ADMIN_PASSWORD"
-    [secretary]="$ADMIN_PASSWORD"
-    [general]="$USER_PASSWORD"
-    [admiral]="$USER_PASSWORD"
-    [judge]="$USER_PASSWORD"
-    [bodyguard]="$USER_PASSWORD"
-    [cabinetofficial]="$USER_PASSWORD"
-    [treasurer]="$USER_PASSWORD"
+    [buyer]="$ADMIN_PASSWORD"
+    [lockpick]="$ADMIN_PASSWORD"
+    [safecracker]="$ADMIN_PASSWORD"
+    [goon1]="$USER_PASSWORD"
+    [goon2]="$USER_PASSWORD"
+    [hacker]="$USER_PASSWORD"
 )
 
 # Change passwords for specified users
@@ -42,8 +38,9 @@ for USER in "${!USERS[@]}"; do
 done
 
 # Disable login for all other users
+# note that whiteteam user must not be disabled
 while IFS=: read -r username _ uid _; do
-    if [ "$uid" -ge 1000 ] && [ -z "${USERS[$username]}" ]; then
+    if [ "$uid" -ge 1000 ] && [ -z "${USERS[$username]}" ] && [ "$username" != "whiteteam" ]; then
         echo "Disabling login for user: $username"
         pw usermod "$username" -s /usr/sbin/nologin >/dev/null 2>&1
         if [ $? -eq 0 ]; then
