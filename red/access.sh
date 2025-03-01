@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..13}; do
+for i in {1..18}; do
   echo -e "Sending request for Team $i\n"
   
   response=$(curl -s -X POST "http://wire.team$i.bank.heist:817/save-credentials" \
