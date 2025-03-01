@@ -188,10 +188,11 @@ function Configure-Firewall-For-Host {
     $allowedPorts = @()
 
     switch ($HostName.ToLower()) {
-        "wire" { # Wire; Windows Server 2022; IIS (HTTP, HTTPS)
+        "wire" { # Wire; Windows Server 2022; IIS (HTTP, HTTPS, RDP)
             $allowedPorts = @(
                 @{Port=80; Protocol="TCP"; Name="HTTP"},
                 @{Port=443; Protocol="TCP"; Name="HTTPS"}
+                @{Port=3389; Protocol="TCP"; Name="RDP"}
             )
         }
         "vault" { # Vault; Windows Server 2022; DNS, LDAP (DNS TCP/UDP, LDAP TCP/UDP, LDAPS)
