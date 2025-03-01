@@ -41,9 +41,6 @@ configure_iptables() {
     # Flush existing iptables rules
     sudo iptables -F
 
-    # Set default policies to deny incoming and outgoing traffic
-    sudo iptables -P INPUT DROP
-    sudo iptables -P OUTPUT DROP
 
     # Ask the user which ports to open
     echo "Enter the ports you want to open (space-separated):"
@@ -55,6 +52,10 @@ configure_iptables() {
         sudo iptables -A INPUT -p tcp --dport $port -j ACCEPT
         sudo iptables -A OUTPUT -p tcp --sport $port -j ACCEPT
     done
+
+    # Set default policies to deny incoming and outgoing traffic
+    sudo iptables -P INPUT DROP
+    sudo iptables -P OUTPUT DROP
 
     sudo iptables -L -v
 
