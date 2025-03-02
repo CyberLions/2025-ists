@@ -7,7 +7,18 @@ configure_ufw() {
     sudo ufw reset
     sudo ufw default deny incoming
     sudo ufw default deny outgoing
-    sudo ufw enable
+
+    #Prompt User to set SSH
+    echo "Do you want to allow SSH (Y/N)?"
+    read -r answer
+
+    if [[ "${answer,,}" == "y" ]]; then
+        echo "yes"
+        sudo ufw allow ssh
+    else
+        echo "You chose NO. IF YOU MEANT TO SAY YES ADD PORT 22 ON REQUESTED PORTS!!!!"
+    fi
+
 
     # Ask the user which ports to open
     echo "Enter the ports you want to open (space-separated):"
@@ -32,19 +43,47 @@ configure_ufw() {
 
     done
 
+    sudo ufw enable
     sudo ufw status verbose
+
+
+    echo "If you need internet access run 'sudo ufw default allow outgoing' but understand it will allow ALL outgoing so don't keep it permanently"
 }
 
 # Function to configure iptables
 configure_iptables() {
     echo "iptables is installed. Setting up firewall rules..."
     # Flush existing iptables rules
+    sudo iptables -P INPUT ACCEPT
+    sudo iptables -P FORWARD ACCEPT
+    sudo iptables -P OUTPUT ACCEPT
+    sudo iptables -t nat -F
+    sudo iptables -t mangle -F
     sudo iptables -F
+    sudo iptables -X
 
+    #Prompt User to set SSH
+    echo "Do you want to allow SSH (Y/N)?"
+    read -r answer
+
+    if [[ "${answer,,}" == "y" ]]; then
+	echo "yes"
+	sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
+    else
+	echo "You chose NO. IF YOU MEANT TO SAY YES ADD PORT 22 ON REQUESTED PORTS!!!!"
+    fi
 
     # Ask the user which ports to open
     echo "Enter the ports you want to open (space-separated):"
     read -r ports
+
+    # check for ftp and open passive ports
+    if [[ "$ports" =~  "21" ]]; then
+        echo "add passive port 40000-50000"
+        sudo iptables -A OUTPUT -p tcp --match multiport --sports 40000:50000 -j ACCEPT
+	sudo iptables -A INPUT -p tcp --match multiport --dports 40000:50000 -j ACCEPT
+    fi
 
     # Open the specified ports
     for port in $ports; do
@@ -56,6 +95,7 @@ configure_iptables() {
     # Set default policies to deny incoming and outgoing traffic
     sudo iptables -P INPUT DROP
     sudo iptables -P OUTPUT DROP
+
 
     sudo iptables -L -v
 
@@ -74,4 +114,4 @@ else
     exit 1
 fi
 
-echo "Firewall configuration complete."
+echo "Firewall configuration complete. Allow all outbound if you need internet connection. The default for this script is to deny all but the necessary outbound traffic."
